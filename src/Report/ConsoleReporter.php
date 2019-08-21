@@ -1,29 +1,15 @@
 <?php
 
-namespace Beapp\RepositoryTesterBundle\Service;
+namespace Beapp\RepositoryTester\Report;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
-class TestReporter
+class ConsoleReporter extends TestReporter
 {
-    /** @var array */
-    private $classesTests = [];
-
-    /** @var array */
-    private $classesErrors = [];
-
-    private $skippedTests = [];
-
-    /** @var int[] */
-    private $testsCount =  [
-        'success' => 0,
-        'skipped' => 0,
-        'failed'  => 0,
-    ];
 
     public function setCurrentClass(string $className)
     {
-        if(!isset($this->classesReports[$className])){
+        if (!isset($this->classesReports[$className])) {
             $this->classesTests[$className] = sprintf('%s =>   ', $className);
             $this->classesErrors[$className] = [];
             $this->skippedTests[$className] = [];
@@ -60,25 +46,23 @@ class TestReporter
 
     public function buildReporting(OutputInterface $output)
     {
-        $output->writeln('<info>Classes tested : '.count($this->classesTests));
-        $output->writeln('Successful tests : '.$this->testsCount['success']);
-        $output->writeln('Skipped tests : '.$this->testsCount['skipped']);
-        $output->writeln('Failed tests : '.$this->testsCount['failed'].'</info>');
+        $output->writeln('<info>Classes tested : ' . count($this->classesTests));
+        $output->writeln('Successful tests : ' . $this->testsCount['success']);
+        $output->writeln('Skipped tests : ' . $this->testsCount['skipped']);
+        $output->writeln('Failed tests : ' . $this->testsCount['failed'] . '</info>');
 
-        foreach($this->classesTests as $className => $classTest)
-        {
+        foreach ($this->classesTests as $className => $classTest) {
             $output->writeln('');
             $output->writeln($classTest);
 
-            foreach($this->skippedTests[$className] as $skippedTest)
-            {
-                $output->writeln('<comment>'.$skippedTest.'</comment>');
+            foreach ($this->skippedTests[$className] as $skippedTest) {
+                $output->writeln('<comment>' . $skippedTest . '</comment>');
             }
 
-            foreach($this->classesErrors[$className] as $classError)
-            {
-                $output->writeln('<error>'.$classError.'</error>');
+            foreach ($this->classesErrors[$className] as $classError) {
+                $output->writeln('<error>' . $classError . '</error>');
             }
         }
     }
+
 }

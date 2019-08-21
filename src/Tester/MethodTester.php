@@ -1,29 +1,31 @@
 <?php
 
-namespace Beapp\RepositoryTesterBundle\Test;
+namespace Beapp\RepositoryTester\Tester;
 
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query\QueryException;
+use Exception;
+use ReflectionMethod;
 
-class MethodTester
+abstract class MethodTester
 {
-    /** @var \ReflectionMethod */
-    private $reflectionMethod;
+    /** @var ReflectionMethod */
+    protected $reflectionMethod;
 
     /** @var object */
-    private $testedInstance;
+    protected $testedInstance;
 
     /** @var array */
-    private $parameters;
+    protected $parameters;
 
     /**
      * MethodTester constructor.
-     * @param \ReflectionMethod $reflectionMethod
+     * @param ReflectionMethod $reflectionMethod
      * @param object $testedInstance
      * @param array $parameters
      */
-    public function __construct(\ReflectionMethod $reflectionMethod, object $testedInstance, array $parameters)
+    public function __construct(ReflectionMethod $reflectionMethod, $testedInstance, array $parameters = [])
     {
         $this->reflectionMethod = $reflectionMethod;
         $this->testedInstance = $testedInstance;
@@ -31,9 +33,9 @@ class MethodTester
     }
 
     /**
-     * @return \ReflectionMethod
+     * @return ReflectionMethod
      */
-    public function getMethod(): \ReflectionMethod
+    public function getMethod(): ReflectionMethod
     {
         return $this->reflectionMethod;
     }
@@ -41,11 +43,14 @@ class MethodTester
     /**
      * @return object
      */
-    public function getTestedInstance(): object
+    public function getTestedInstance()
     {
         return $this->testedInstance;
     }
 
+    /**
+     * @return string
+     */
     public function getTestedClass(): string
     {
         return get_class($this->testedInstance);
@@ -61,10 +66,7 @@ class MethodTester
 
     /**
      * @return mixed
-     * @throws NoResultException|NonUniqueResultException|\Error|\TypeError|QueryException|\Exception
+     * @throws NoResultException|NonUniqueResultException|QueryException|Exception
      */
-    public function test()
-    {
-        return $this->reflectionMethod->invokeArgs($this->testedInstance, $this->parameters);
-    }
+    public abstract function test();
 }
